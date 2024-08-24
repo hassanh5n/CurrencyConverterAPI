@@ -71,11 +71,15 @@ int main() {
 				else {
 					throw runtime_error("Failed to get a valid response from the server. Status code: " + to_string(response.status_code()));
 				}
-				}).then([](web::json::value body) {
+				}).then([&currency](web::json::value body) {
 					try {
 						auto rate = body[U("info")][U("rate")].as_double();
 
-						cout << "\tRate: " << rate << " ";
+						double amount = stod(currency.getAmount());
+						double convertedAmount = amount * rate;
+
+						cout << "\tRate: " << rate << " " <<currency.getTo() <<endl;
+						cout << "\tConverted Amount: " << convertedAmount << " " << currency.getTo() << endl;
 					}
 					catch (const json::json_exception& e) {
 						cerr << "Error parsing JSON response: " << e.what() << endl;
@@ -85,8 +89,6 @@ int main() {
 		catch (const exception& e) {
 			cerr << "An error occurred: " << e.what() << endl;
 		}
-
-		cout << currency.getTo();
 
 		cout << "\n\n";
 		cout << "Do you want to try again? (y = Yes, n = No)" << endl;
